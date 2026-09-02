@@ -1,0 +1,73 @@
+﻿using BookWeb.Business.Services.IServices;
+using BookWeb.DataAccess.Data;
+using BookWeb.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BookWeb.Business.Services
+{
+    public class ProductService : IProductService
+    {
+        private readonly ApplicationDbContext _context;
+
+        public ProductService(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+        
+        public async Task<IEnumerable<Product>> GetAllProductsAsync(bool includeCategory = false)
+        {
+            if (includeCategory)
+            {
+                return await _context.Products.Include( u => u.Category).ToListAsync();
+            }
+            else
+            {
+                return await _context.Products.ToListAsync();
+            }
+        }
+
+        public async Task<Product?> GetProductByIdAsync(int id, bool includeCategory = false)
+        {
+            if (includeCategory)
+            {
+                return await _context.Products.Include(u => u.Category).FirstOrDefaultAsync( u => u.Id == id);
+            }
+            else
+            {
+                return await _context.Products.FirstOrDefaultAsync(u => u.Id == id);
+            }
+           
+        }
+        public async Task<Product> CreateProductAsync(Product product)
+        {
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+            return product;
+        }
+
+        public async Task DeleteProductAsync(int id)
+        {
+            var product = _context.Products.Find(id);
+
+            if (product == null)
+            {
+                throw new KeyNotFoundException($"Product {id} Not Found");
+            }
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateProductAsync(Product product)
+        {
+            _context.Products.Update(product);
+            await _context.SaveChangesAsync();
+        }
+
+    }
+}
