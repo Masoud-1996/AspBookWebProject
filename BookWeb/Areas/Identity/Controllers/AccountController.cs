@@ -87,6 +87,7 @@ namespace BookWeb.Areas.Identity.Controllers
                     City = registerVM.City,
                     State = registerVM.State,
                     PostalCode = registerVM.PostalCode,
+                    Name = registerVM.Name,
                 };
 
                 var result =  await _userManager.CreateAsync(user, registerVM.Password);
