@@ -63,8 +63,7 @@ namespace BookWeb.Areas.Customer.Controllers
 
             shoppingCart.ApplicationUserId =  userId;
             await _shoppingCartService.AddToCartAsync(shoppingCart); 
-
-
+            TempData["success"] = "Item Added to cart";
             return RedirectToAction("Details" , new {productId = shoppingCart.ProductId});
         }
 
