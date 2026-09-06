@@ -34,12 +34,19 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="Customer" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Admin" asp-controller="Order" asp-action="Index">
+                                    <i class="bi bi-box-seam me-1"></i> My Orders
+                                </a>
+                            </li>
+                        }
                         <li class="nav-item">
                             @if (User.IsInRole(SD.RoleAdmin) || User.IsInRole(SD.RoleEmployee))
                             {
                                 <a class="nav-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
-                                    <i class="bi bi-speedmeter2 me-1"></i>
-                                         Admin Panel
+                                    <i class="bi bi-person me-1"></i> Admin Panel
                                 </a>
                             }
                         </li>
