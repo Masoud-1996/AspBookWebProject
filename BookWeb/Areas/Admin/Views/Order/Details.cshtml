@@ -1,4 +1,5 @@
-﻿@model OrderHeader 
+﻿@using BookWeb.Utility
+@model OrderHeader 
 
 <div class="container-fluid py-3">
     <form method="post">
@@ -20,8 +21,8 @@
                 <div class="row g-5">
                     <!-- Left column: Shipping info -->
                     <div class="col-lg-6">
-                        <h6 class="text-uppercase fw-semibold text-secondary mb-4" style="font-size: 0.7rem; letter-spacing: 0.1em;">
-                            Shipping &amp; Tracking
+                        <h6 class="text-uppercase fw-semibold text-info mb-4" style="font-size: 0.7rem; letter-spacing: 0.1em;">
+                            Order Details
                         </h6>
 
                         <div class="row g-2 mb-2">
@@ -88,20 +89,23 @@
                             </div>
                         </div>
 
-                        <div class="row g-2 mb-2">
-                            <label class="col-4 col-form-label small fw-medium text-secondary">Carrier</label>
-                            <div class="col-8">
-                                <input asp-for="Carrier" type="text" id="carrier" class="form-control form-control-sm" />
-                            </div>
-                        </div>
+                        @if (Model.OrderStatus!= SD.StatusPending && Model.OrderStatus!= SD.StatusApproved)
+                        {
 
-                        <div class="row g-2 mb-2">
-                            <label class="col-4 col-form-label small fw-medium text-secondary">Tracking</label>
-                            <div class="col-8">
-                                <input asp-for="TrackingNumber" type="text" id="trackingNumber" class="form-control form-control-sm" />
+                            <div class="row g-2 mb-2">
+                                <label class="col-4 col-form-label small fw-medium text-secondary">Carrier</label>
+                                <div class="col-8">
+                                    <input asp-for="Carrier" type="text" id="carrier" class="form-control form-control-sm" />
+                                </div>
                             </div>
-                        </div>
 
+                            <div class="row g-2 mb-2">
+                                <label class="col-4 col-form-label small fw-medium text-secondary">Tracking</label>
+                                <div class="col-8">
+                                    <input asp-for="TrackingNumber" type="text" id="trackingNumber" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                        }
                         @if (Model.ShippingDate != default(DateTime))
                         {
                             <div class="row g-2 mb-2">
@@ -112,20 +116,19 @@
                             </div>
                         }
 
-                        <button type="submit" class="btn btn-accent w-100 fw-semibold mt-3">
+                        <button asp-action="UpdateOrderDetails" type="submit" class="btn btn-accent w-100 fw-semibold mt-3">
                             Update Order Details
                         </button>
                     </div>
 
                     <!-- Right column: Order summary -->
                     <div class="col-lg-6">
-                        <h6 class="text-uppercase fw-semibold text-secondary mb-4" style="font-size: 0.7rem; letter-spacing: 0.1em;">
+                        <h6 class="text-uppercase fw-semibold text-info mb-4" style="font-size: 0.7rem; letter-spacing: 0.1em;">
                             Order Summary
                         </h6>
 
                         <span class="badge bg-dark mb-3">
                             <i class="bi bi-info-circle me-1"></i> <span>@Model.OrderStatus</span>
-                            @* TODO: Display order status *@
                         </span>
 
                         <div class="border rounded overflow-hidden mb-4">
@@ -156,17 +159,24 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-accent fw-semibold">
-                                Start Processing
-                            </button>
-
-                            <button type="submit" onclick="return validateInput()" class="btn btn-accent fw-semibold">
-                                Ship Order
-                            </button>
-
-                            <button type="submit" class="btn btn-danger fw-semibold">
-                                Cancel Order
-                            </button>
+                            @if (Model.OrderStatus == SD.StatusApproved)
+                            {
+                                <button type="submit" asp-action="UpdateOrderStatus" asp-route-status="@SD.StatusInProgress" class="btn btn-accent fw-semibold">
+                                    Start Processing
+                                </button>
+                            }
+                             @if (Model.OrderStatus == SD.StatusInProgress)
+                            {
+                                <button asp-action="UpdateOrderStatus" asp-route-status="@SD.StatusShipped" type="submit" onclick="return validateInput()" class="btn btn-warning fw-semibold">
+                                    Ship Order
+                                </button>
+                            }
+                            @if (Model.OrderStatus != SD.StatusRefunded && Model.OrderStatus != SD.StatusCancelled && Model.OrderStatus != SD.StatusShipped)
+                            {
+                                <button asp-action="UpdateOrderStatus" asp-route-status="@SD.StatusCancelled" type="submit" class="btn btn-danger fw-semibold">
+                                    Cancel Order
+                                </button>
+                            }
                         </div>
                     </div>
                 </div>
