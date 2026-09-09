@@ -6,7 +6,7 @@ $(document).ready(function () {
 
 function loadDataTable() {
 
-    userDataTable = new DataTable('#tbldata', {
+    userDataTable = new DataTable('#tblData', {
         ajax: '/admin/user/getall',
         columns: [
             { data: 'name', "width": "25%" },
